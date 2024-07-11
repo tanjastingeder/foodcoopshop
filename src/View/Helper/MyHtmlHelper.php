@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\View\Helper;
 
 use Cake\Core\Configure;
-use Cake\I18n\I18n;
 use Cake\Utility\Text;
 use Cake\View\View;
 use Cake\View\Helper\HtmlHelper;
@@ -14,6 +13,10 @@ use App\Services\OutputFilter\OutputFilterService;
 use App\Model\Table\CartsTable;
 use App\Services\OrderCustomerService;
 use App\Model\Entity\Customer;
+use App\Model\Entity\Cart;
+use App\Model\Entity\OrderDetail;
+use App\Model\Entity\Payment;
+use Cake\I18n\I18n;
 
 /**
  * FoodCoopShop - The open source software for your foodcoop
@@ -256,12 +259,13 @@ class MyHtmlHelper extends HtmlHelper
         return $currencyIcon;
     }
 
-    /**
-     * software documentation only exists in DE
-     */
     public function getDocsUrl(string $page): string
     {
-        return 'https://foodcoopshop.github.io/' . $page;
+        $docsUrl = 'https://foodcoopshop.github.io/';
+        if (I18n::getLocale() == 'de_DE') {
+            return $docsUrl . $page;
+        }
+        return $docsUrl;
     }
 
     public function getNameRespectingIsDeleted($customer)

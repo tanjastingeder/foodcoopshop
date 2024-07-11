@@ -6,6 +6,13 @@
 
 Das Format basiert auf [keepachangelog.com](http://keepachangelog.com) und verwendet [Semantic Versioning](http://semver.org/).
 
+## v4.0.1
+
+### Neue Funktionen / Verbesserungen
+- Die Software wurde auf Russisch übersetzt. [I#975](https://github.com/foodcoopshop/foodcoopshop/issues/975) / [PR#1071](https://github.com/foodcoopshop/foodcoopshop/pull/1071) <a href="https://github.com/guland2000"><img src="https://github.com/guland2000.png" width="20"></a>
+
+Datum: 11.07.2024 / [Alle Änderungen anzeigen](https://github.com/foodcoopshop/foodcoopshop/compare/v4.0.0...v4.0.1)
+
 ## v4.0
 
 ### Neue Funktionen / Verbesserungen
