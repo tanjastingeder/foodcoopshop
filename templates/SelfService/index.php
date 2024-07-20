@@ -158,12 +158,13 @@ if ($this->request->getSession()->read('highlightedProductId')) {
             'url' => $this->Slug->getSelfService()
         ]);
         if (!$orderCustomerService->isOrderForDifferentCustomerMode()) {
-            echo $this->element('cart/generalTermsAndConditionsCheckbox');
-            echo $this->element('cart/cancellationTermsCheckbox');
+          if(!Configure::read('appDb.FCS_SELF_SERVICE_SHOW_CONFIRM_DIALOG_ON_SUBMIT')) {
+              echo $this->element('cart/generalTermsAndConditionsCheckbox');
+              echo $this->element('cart/cancellationTermsCheckbox');
         }
         echo $this->element('selfService/paymentType');
     ?>
-    <button type="submit" class="btn btn-success btn-order">
+    <button type="submit" class="btn btn-success btn-order btn-order-self-service">
         <i class="fa-fw fas fa-check"></i> <?php echo __('Finish_pickup'); ?>
     </button>
     <?php echo $this->Form->end(); ?>

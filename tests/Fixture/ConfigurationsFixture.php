@@ -393,6 +393,16 @@ class ConfigurationsFixture extends AppFixture
             'locale' => 'de_DE',
         ],
         [
+            'id_configuration' => 588,
+            'active' => 1,
+            'name' => 'FCS_SELF_SERVICE_SHOW_CONFIRM_DIALOG_ON_SUBMIT',
+            'text' => 'Selbstbedienungs-Modus Bestätigungsdialog anzeigen?<br /><div class="small">Zeige Bestätigungsdialog anstelle Hakerl für AGB und Rücktrittsrecht.',
+            'value' => '0',
+            'type' => 'boolean',
+            'position' => 3150,
+            'locale' => 'de_DE',
+        ],
+        [
             'id_configuration' => 587,
             'active' => 1,
             'name' => 'FCS_CASHLESS_PAYMENT_ADD_TYPE',
