@@ -100,11 +100,23 @@ trait EditQuantityTrait
             $unitName = $unitObject->name ?? '';
             foreach($entity->getDirty() as $dirtyField) {
                 $newValue = $entity->get($dirtyField);
+
+                // quantity_limit was always logged (0 vs 0.000)
+                $originalValue = $oldProduct->stock_available->getOriginal($dirtyField);
+                if ($originalValue === null && $newValue === null) {
+                    continue;
+                }
+
+                if ($originalValue !== null && (Configure::read('app.numberHelper')->formatAsDecimal($newValue, 3) == Configure::read('app.numberHelper')->formatAsDecimal($originalValue, 3))) {
+                    continue;
+                }
+
                 switch($dirtyField) {
                     case 'quantity':
                         $translatedFieldName = __d('admin', 'Available_quantity') . ': '
                             . __d('admin', 'Old_value') . ': <b>' . $productQuantityService->getFormattedAmount($isAmountBasedOnQuantityInUnits, $oldStockAvailable, $unitName) . '</b> '
                             . __d('admin', 'New_value');
+                        $newValue = $productQuantityService->getFormattedAmount($isAmountBasedOnQuantityInUnits, $newValue, $unitName);
                         break;
                     case 'always_available':
                         $translatedFieldName = __d('admin', 'Always_available');
@@ -116,6 +128,7 @@ trait EditQuantityTrait
                         break;
                     case 'quantity_limit':
                         $translatedFieldName = __d('admin', 'Quantity_limit');
+                        $newValue = $productQuantityService->getFormattedAmount($isAmountBasedOnQuantityInUnits, $newValue, $unitName);
                         break;
                     case 'sold_out_limit':
                         $translatedFieldName = __d('admin', 'Sold_out_limit');
@@ -123,21 +136,29 @@ trait EditQuantityTrait
                         break;
                 }
                 if (isset($translatedFieldName)) {
-                    $dirtyFieldsWithNewValues[] = $translatedFieldName . ': <b>' . $productQuantityService->getFormattedAmount($isAmountBasedOnQuantityInUnits, $newValue, $unitName) . '</b>';
+                    $dirtyFieldsWithNewValues[] = $translatedFieldName . ': <b>' . $newValue . '</b>';
                 }
             }
 
-            $this->ActionLog->customSave(
-                'product_quantity_changed',
-                $this->identity->getId(),
-                $productId,
-                'products',
-                __d('admin', 'The_amount_of_the_product_{0}_from_manufacturer_{1}_was_changed:_{2}.', [
-                    '<b>' . $oldProduct->name . '</b>',
-                    '<b>' . $oldProduct->manufacturer->name . '</b>',
-                    join(', ', $dirtyFieldsWithNewValues),
-                ])
-            );
+            if (!empty($dirtyFieldsWithNewValues)) {
+
+                $changeReason = $this->getRequest()->getData('changeReason', '');
+                if ($changeReason != '') {
+                    $dirtyFieldsWithNewValues[] = __d('admin', 'Reason_for_change') . ': <b>' . $changeReason . '</b>';
+                }
+
+                $this->ActionLog->customSave(
+                    'product_quantity_changed',
+                    $this->identity->getId(),
+                    $productId,
+                    'products',
+                    __d('admin', 'The_amount_of_the_product_{0}_from_manufacturer_{1}_was_changed:_{2}.', [
+                        '<b>' . $oldProduct->name . '</b>',
+                        '<b>' . $oldProduct->manufacturer->name . '</b>',
+                        join(', ', $dirtyFieldsWithNewValues),
+                    ])
+                );
+            }
         }
         $this->getRequest()->getSession()->write('highlightedRowId', $productId);
 

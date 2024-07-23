@@ -19,6 +19,7 @@ foodcoopshop.ModalProductQuantityEdit = {
 
         $('a.product-quantity-edit-button').on('click', function () {
             foodcoopshop.ModalProductQuantityEdit.getOpenHandler($(this), modalSelector);
+            foodcoopshop.Calculator.init(modalSelector);
         });
 
     },
@@ -38,7 +39,9 @@ foodcoopshop.ModalProductQuantityEdit = {
         html += '<div class="field-wrapper quantity-wrapper">';
         html += '<hr />';
         html += '<label>' + foodcoopshop.LocalizedJs.dialogProduct.AvailableAmount + '</label>';
-        html += '<input type="number" step="1" name="dialogQuantityQuantity" id="dialogQuantityQuantity" />';
+        html += '<input type="number" step="1" name="dialogQuantityQuantity" id="dialogQuantityQuantity" class="calculator-output"/><a class="calculator-toggle-button" href="javascript:void(0);"><i class="fas fa-calculator"></i></a><br />';
+        html += '<input id="dialogQuantityCalculator" class="calculator-input" placeholder="' + foodcoopshop.LocalizedJs.admin.ExampleGivenAbbr + ' 167+142" type="text" /><br />';
+        html += '<input type="text" name="dialogQuantityChangeReason" id="dialogQuantityChangeReason" maxlength="200" placeholder="' + foodcoopshop.LocalizedJs.dialogProduct.ReasonForChange + '" /><br />';
         html += '<hr />';
         html += '</div>';
         html += '<div class="field-wrapper quantity-wrapper">';
@@ -55,7 +58,9 @@ foodcoopshop.ModalProductQuantityEdit = {
         var html = '<label for="dialogQuantityQuantity"></label><br />';
         html += '<div class="field-wrapper">';
         html += '<label>' + foodcoopshop.LocalizedJs.dialogProduct.CurrentStock + unitNameString + '</label>';
-        html += '<input type="number" step="' + this.getStep(isPricePerUnitEnabled) + '" name="dialogQuantityQuantity" id="dialogQuantityQuantity" /><br />';
+        html += '<input type="number" step="' + this.getStep(isPricePerUnitEnabled) + '" name="dialogQuantityQuantity" id="dialogQuantityQuantity" class="calculator-output" /><a class="calculator-toggle-button" href="javascript:void(0);"><i class="fas fa-calculator"></i></a><br />';
+        html += '<input id="dialogQuantityCalculator" class="calculator-input" placeholder="' + foodcoopshop.LocalizedJs.admin.ExampleGivenAbbr + ' 167+142" type="text" /><br />';
+        html += '<input type="text" name="dialogQuantityChangeReason" id="dialogQuantityChangeReason" maxlength="200" placeholder="' + foodcoopshop.LocalizedJs.dialogProduct.ReasonForChange + '" /><br />';
         html += '<hr />';
         html += '</div>';
         html += '<div class="field-wrapper">';
@@ -88,6 +93,7 @@ foodcoopshop.ModalProductQuantityEdit = {
             quantity: $('#dialogQuantityQuantity').val(),
             alwaysAvailable: $('#dialogQuantityAlwaysAvailable:checked').length > 0 ? 1 : 0,
             defaultQuantityAfterSendingOrderLists: $('#dialogQuantityDefaultQuantityAfterSendingOrderLists').val() == '' ? null : $('#dialogQuantityDefaultQuantityAfterSendingOrderLists').val(),
+            changeReason: $('#dialogQuantityChangeReason').val(),
         };
 
         if (foodcoopshop.Admin.isAdvancedStockManagementEnabled(row)) {
@@ -136,7 +142,7 @@ foodcoopshop.ModalProductQuantityEdit = {
         foodcoopshop.Modal.appendModalToDom(
             modalSelector,
             foodcoopshop.LocalizedJs.dialogProduct.ChangeAmount,
-            html
+            html,
         );
 
         foodcoopshop.Modal.bindSuccessButton(modalSelector, function() {
@@ -175,6 +181,7 @@ foodcoopshop.ModalProductQuantityEdit = {
         let quantityValForOverlay = row.find('span.quantity-for-dialog').html();
         quantityValForOverlay = foodcoopshop.Helper.getStringAsFloat(quantityValForOverlay);
         $(modalSelector + ' #dialogQuantityQuantity').val(quantityValForOverlay);
+        $(modalSelector + ' #dialogQuantityCalculator').val(quantityValForOverlay.toString().replace('.', ','));
         if (row.find('.amount').html().match('fa-infinity')) {
             $(modalSelector + ' #dialogQuantityAlwaysAvailable').trigger('click');
         }
